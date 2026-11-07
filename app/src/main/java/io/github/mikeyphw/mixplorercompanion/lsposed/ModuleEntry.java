@@ -37,7 +37,7 @@ public final class ModuleEntry extends XposedModule {
                 }
                 return result;
             });
-            log(Log.INFO, TAG, "Beta BrowseActivity lifecycle hook installed");
+            log(Log.INFO, TAG, "R2D_HOOK_INSTALLED");
         } catch (Throwable error) {
             log(Log.WARN, TAG, "Unrecognized beta layout: hook not installed", error);
         }
@@ -53,12 +53,19 @@ public final class ModuleEntry extends XposedModule {
         if (Build.VERSION.SDK_INT >= 28) code = info.getLongVersionCode();
         else code = info.versionCode;
         if (!AppearanceContract.supports(packageName, code)) return;
+        // This marker proves entry into the guarded onResume callback, not a visual change.
+        log(Log.INFO, TAG, "R2D_CALLBACK_REACHED");
         SharedPreferences preferences;
         try { preferences = getRemotePreferences(AppearanceContract.GROUP); }
         catch (RuntimeException | LinkageError ignored) { return; }
-        if (!preferences.getBoolean(AppearanceContract.ENABLED, false)) return;
+        if (!preferences.getBoolean(AppearanceContract.ENABLED, false)) {
+            log(Log.INFO, TAG, "R2D_EXPERIMENT_DISABLED");
+            return;
+        }
         boolean bars = preferences.getBoolean(AppearanceContract.SYSTEM_BARS, true);
         boolean tabs = preferences.getBoolean(AppearanceContract.TAB_SURFACE, true);
         ThemeApplicator.apply(activity, bars, tabs);
+        // A request was submitted; async view styling and visual acceptance remain unverified.
+        log(Log.INFO, TAG, "R2D_APPEARANCE_REQUESTED");
     }
 }

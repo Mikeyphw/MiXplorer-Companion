@@ -99,13 +99,24 @@ class MainActivity : AppCompatActivity() {
             label(card, "API 102: version-pinned BrowseActivity.onResume hook for the inspected beta only.")
             label(card, "Scope catalog: beta, stable, Silver. Stable/Silver receive no UI hooks in R2.")
         }
+        // Diagnostic readiness is deliberately distinct from runtime qualification.
+        val experimentEnabled = try {
+            remote?.getBoolean(AppearanceContract.ENABLED, false) ?: false
+        } catch (_: RuntimeException) { false }
+        section(content, "Runtime qualification") { card ->
+            label(card, "R2D runtime acceptance: NOT VERIFIED")
+            label(card, if (qualified) "Target version: exact inspected Beta match" else "Target version: unsupported or absent")
+            label(card, if (remote != null) "Vector/LSPosed service: connected" else "Vector/LSPosed service: disconnected")
+            label(card, if (experimentEnabled) "Appearance preference: enabled (not proof of injection)" else "Appearance preference: disabled")
+            label(card, "Host CI tests companion UI only. Verify callback, appearance and rollback on your own device before acceptance.")
+        }
         section(content, "Tasker automation") { card ->
             label(card, "Action dispatch is intentionally disabled pending on-device contract tests.")
             label(card, "APK evidence: ACTION_TASK is present; completion callbacks are unverified.")
         }
         section(content, "Diagnostics") { card ->
             label(card, "APK inspected: MiXplorer 6.71.15-BETA • versionCode 26090412")
-            label(card, "R2A runtime acceptance: PENDING • source/CI success does not mean the hook works")
+            label(card, "R2D device runtime acceptance: PENDING • CI does not prove injection")
             val button = MaterialButton(this).apply {
                 text = "Refresh package detection"
                 setOnClickListener { render() }

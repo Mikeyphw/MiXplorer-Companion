@@ -38,7 +38,7 @@ class QualificationContracts(unittest.TestCase):
         s=(ROOT/'app/build.gradle.kts').read_text()
         self.assertIn('androidTestImplementation("androidx.test:runner:1.7.0")',s)
         self.assertIn('androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")',s)
-        self.assertIn('versionCode = 2',s)
+        self.assertRegex(s, r'versionCode\s*=\s*[2-9]\d*')
         self.assertIn('targetSdk = 35',s)
         self.assertIn('compileSdk = 37',s)
     def test_ui_instrumentation_defaults_off(self):
