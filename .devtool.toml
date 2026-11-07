@@ -1,0 +1,26 @@
+[project]
+runner = "android"
+platform = "android"
+
+[workspace]
+default_target = "companion"
+
+[targets.companion]
+runner = "android"
+platform = "android"
+root = "."
+
+[targets.companion.android]
+variant = "debug"
+instrumentation = "never"
+
+[targets.companion.android.adb]
+provider = "auto"
+device_policy = "first-physical"
+
+[targets.companion.tasks]
+restore = ["help"]
+build = [":app:assembleDebug"]
+test = [":app:testDebugUnitTest"]
+lint = [":app:lintDebug"]
+clean = ["clean"]

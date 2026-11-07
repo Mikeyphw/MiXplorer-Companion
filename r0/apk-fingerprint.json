@@ -1,0 +1,39 @@
+{
+  "apk_filename": "MiXplorer_6.71.15-BETA.apk",
+  "sha256": "62b0f397ee751e90b5b0f619004dff2c39ba466a5fe5d2f8ae1a23413cf8ff98",
+  "size_bytes": 5321279,
+  "manifest": {
+    "package": "com.mixplorer.beta",
+    "version_name": "6.71.15-BETA",
+    "version_code": 26090412,
+    "min_sdk": 9,
+    "target_sdk": 37,
+    "compile_sdk": 37,
+    "browse_activity": "com.mixplorer.activities.BrowseActivity",
+    "receiver": "com.mixplorer.BroadcastReceiver",
+    "receiver_exported": true
+  },
+  "dex": {
+    "action_task_literal_present": true,
+    "action_task_literal": "com.mixplorer.ACTION_TASK",
+    "tasker_native_plugin_strings": false,
+    "custom_ui_classes": [
+      "com.mixplorer.widgets.MiButton",
+      "com.mixplorer.widgets.MiListView",
+      "com.mixplorer.widgets.MiDrawer",
+      "com.mixplorer.widgets.MiPager",
+      "com.mixplorer.widgets.MiPopupItem",
+      "com.mixplorer.widgets.MiTabBar",
+      "com.mixplorer.widgets.MiViewPager"
+    ],
+    "symbols_obfuscated": true
+  },
+  "runtime_verified": false,
+  "intent_extras_verified": false,
+  "hooks_verified": false,
+  "notes": [
+    "R0 evidence collected by parsing uploaded APK ZIP binary AndroidManifest.xml and DEX string/type pools without running the APK.",
+    "APK not included in companion source, output, or Git repository.",
+    "Action constant alone is insufficient to prove dispatch or completion."
+  ]
+}

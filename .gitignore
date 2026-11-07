@@ -1,0 +1,14 @@
+# Devtool transaction and run evidence is local state; project config is .devtool.toml
+.devtool/
+.gradle/
+**/build/
+/local.properties
+.idea/
+*.iml
+.devtool/private/
+.devtool/state/
+.devtool/reports/
+*.apk
+*.aab
+*.keystore
+*.jks
