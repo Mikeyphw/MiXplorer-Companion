@@ -1,6 +1,9 @@
 package io.github.mikeyphw.mixplorercompanion
 
 import android.os.Bundle
+import android.content.SharedPreferences
+import android.widget.Toast
+import io.github.mikeyphw.mixplorercompanion.appearance.AppearanceContract
 import android.graphics.Typeface
 import android.view.View
 import android.widget.LinearLayout
@@ -18,6 +21,17 @@ import com.google.android.material.materialswitch.MaterialSwitch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var preferences: Preferences
+    private val serviceListener = Runnable { runOnUiThread { render() } }
+
+    override fun onStart() {
+        super.onStart()
+        CompanionApp.addListener(serviceListener)
+    }
+
+    override fun onStop() {
+        CompanionApp.removeListener(serviceListener)
+        super.onStop()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         preferences = Preferences(this)
@@ -69,9 +83,21 @@ class MainActivity : AppCompatActivity() {
                 recreate()
             }
         }
+        val beta = MiXPackageProbe(this).installed().firstOrNull { it.packageName == AppearanceContract.BETA_PACKAGE }
+        val qualified = beta != null && AppearanceContract.supports(beta.packageName, beta.versionCode)
+        val remote = CompanionApp.appearancePreferences()
+        val canChange = qualified && remote != null
+        section(content, "MiXplorer Beta appearance • R2A") { card ->
+            label(card, if (qualified) "Inspected beta 6.71.15 detected." else "Unsupported or missing beta version: appearance is disabled.")
+            label(card, if (remote == null) "LSPosed service not connected. Enable the module and open its scope in Vector." else "LSPosed service connected. Changes apply on next MiXplorer launch.")
+            remoteSwitch(card, "Enable Material You experiment", "Off by default; only beta version 26090412", remote, AppearanceContract.ENABLED, false, canChange)
+            remoteSwitch(card, "System bar surfaces", "Dynamic neutral surfaces and icon contrast (Android 15+ may override)", remote, AppearanceContract.SYSTEM_BARS, true, canChange)
+            remoteSwitch(card, "Tab bar surface", "Subtle Material You surface for the existing MiXplorer tabs", remote, AppearanceContract.TAB_SURFACE, true, canChange)
+            label(card, "After changing settings, force-stop/relaunch MiXplorer to apply or undo its view styling. Disable the module in Vector for emergency rollback.")
+        }
         section(content, "LSPosed UI integration") { card ->
-            label(card, "API 102 entry point registered. No MiXplorer hooks are installed by this release.")
-            label(card, "Scoped to: com.mixplorer.beta, com.mixplorer, com.mixplorer.silver")
+            label(card, "API 102: version-pinned BrowseActivity.onResume hook for the inspected beta only.")
+            label(card, "Scope catalog: beta, stable, Silver. Stable/Silver receive no UI hooks in R2.")
         }
         section(content, "Tasker automation") { card ->
             label(card, "Action dispatch is intentionally disabled pending on-device contract tests.")
@@ -79,13 +105,38 @@ class MainActivity : AppCompatActivity() {
         }
         section(content, "Diagnostics") { card ->
             label(card, "APK inspected: MiXplorer 6.71.15-BETA • versionCode 26090412")
-            label(card, "Runtime acceptance: PENDING")
+            label(card, "R2A runtime acceptance: PENDING • source/CI success does not mean the hook works")
             val button = MaterialButton(this).apply {
                 text = "Refresh package detection"
                 setOnClickListener { render() }
             }
             card.addView(button)
         }
+    }
+
+    private fun remoteSwitch(
+        card: LinearLayout, title: String, detail: String,
+        remote: SharedPreferences?, key: String, default: Boolean, enabled: Boolean
+    ) {
+        val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        val description = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        label(description, title)
+        label(description, detail)
+        row.addView(description, LinearLayout.LayoutParams(0, -2, 1f))
+        val current = try { remote?.getBoolean(key, default) ?: default } catch (_: RuntimeException) { default }
+        val control = MaterialSwitch(this).apply {
+            isChecked = current
+            isEnabled = enabled
+            contentDescription = title
+            setOnCheckedChangeListener { _, value ->
+                val saved = try { remote?.edit()?.putBoolean(key, value)?.commit() == true }
+                    catch (_: RuntimeException) { false }
+                if (!saved) Toast.makeText(this@MainActivity, "Could not save framework preference", Toast.LENGTH_SHORT).show()
+                render()
+            }
+        }
+        row.addView(control, LinearLayout.LayoutParams(-2, -2))
+        card.addView(row)
     }
 
     private fun section(parent: LinearLayout, title: String, content: (LinearLayout) -> Unit) {

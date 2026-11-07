@@ -39,3 +39,14 @@ Never infer a completed file operation merely because MiXplorer accepts a broadc
 ## Developer notes
 
 The custom UI class names in the fingerprint are candidates for later investigation, not stable hook targets. The beta uses obfuscated symbols and hooks must be version gated with automatic fallback. Source-only inspection does not prove runtime compatibility.
+
+
+## R2A: opt-in appearance hooks (beta-only)
+
+R2A adds a strict MiXplorer Beta `6.71.15-BETA` / `26090412` gate for an
+`onResume` hook. The default is disabled, and controls are unavailable until the
+modern LSPosed service is connected. Toggle dynamic system bars or custom tab
+surface separately; force-stop/relaunch MiXplorer after changes. This is an
+experimental Material You foundation, **not** a full UI replacement, and on-
+device acceptance remains mandatory. See `r2/IMPLEMENTATION.md`. Stable and
+Silver are listed only for discovery; R2 does not hook them.
