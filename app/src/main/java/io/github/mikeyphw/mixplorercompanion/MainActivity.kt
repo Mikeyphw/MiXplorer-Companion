@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
         val toolbar = MaterialToolbar(this).apply {
             title = "MiXplorer Companion"
-            subtitle = "R1 • Devtool foundation"
+            subtitle = "R2A • Appearance preview"
         }
         root.addView(toolbar)
         val scroll = ScrollView(this).apply { isFillViewport = true }
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             label(card, desc)
         }
         section(content, "Appearance") { card ->
-            switch(card, "Dynamic Material You colors", "Applies to this companion only in R1", preferences.dynamicColor) {
+            switch(card, "Dynamic Material You colors", "Applies to this companion only", preferences.dynamicColor) {
                 preferences.dynamicColor = it
                 recreate()
             }
