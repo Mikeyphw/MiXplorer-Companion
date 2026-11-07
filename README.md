@@ -72,3 +72,15 @@ PopupWindow menu backgrounds for the exact inspected Beta version only.
 Unsupported custom views are skipped. No file operations or Tasker hooks are
 introduced. Source/CI success does not establish device styling or rollback.
 See `r2/R2B_APPEARANCE.md` for scoped behavior and acceptance.
+
+## R3T: native Tasker plugin (opt-in)
+
+R3T adds a Locale/Tasker action configuration editor and a guarded explicit
+`com.mixplorer.ACTION_TASK` dispatch bridge for inspected MiXplorer Beta
+6.71.15 (`26090412`), **default OFF**. The editor supports COPY, MOVE, RENAME,
+CREATE, DELETE, ARCHIVE, and EXTRACT with configured source/destination/name.
+A Tasker result of `dispatched_unverified` confirms only that Android accepted
+broadcast dispatch; it **does not verify an operation completed**. Actual
+file results must be checked with disposable fixtures on the user's device.
+No new LSPosed hooks are required; appearance is independent.
+See [`r3/TASKER.md`](r3/TASKER.md).

@@ -12,6 +12,18 @@
         android:label="MiXplorer Companion"
         android:description="@string/app_description"
         android:theme="@style/AppTheme">
+        <activity android:name=".tasker.TaskerEditActivity" android:exported="true"
+            android:label="MiXplorer Tasker action" android:icon="@android:drawable/ic_menu_manage">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>
+            </intent-filter>
+        </activity>
+        <receiver android:name=".tasker.TaskerFireReceiver" android:exported="true"
+            android:label="MiXplorer Tasker action">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING"/>
+            </intent-filter>
+        </receiver>
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -33,7 +33,7 @@ if ! adb -s "$SERIAL" shell am instrument -w -r \
 fi
 tr -d '\r' < "$OUT/instrumentation.txt" > "$OUT/instrumentation.normalized.txt"
 mv -- "$OUT/instrumentation.normalized.txt" "$OUT/instrumentation.txt"
-if ! grep -Fxq 'OK (2 tests)' "$OUT/instrumentation.txt" || \
+if ! grep -Fxq 'OK (4 tests)' "$OUT/instrumentation.txt" || \
    ! grep -Fxq 'INSTRUMENTATION_CODE: -1' "$OUT/instrumentation.txt"; then
   tail -n 50 "$OUT/instrumentation.txt" >&2
   echo R2Q_INSTRUMENTATION_RESULT_FAILED >&2

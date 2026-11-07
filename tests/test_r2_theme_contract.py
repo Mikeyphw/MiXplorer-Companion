@@ -20,7 +20,7 @@ class R2SourceContract(unittest.TestCase):
         self.assertNotIn('ACTION_TASK',s)
     def test_no_exported_automation(self):
         manifest=(ROOT/'app/src/main/AndroidManifest.xml').read_text()
-        self.assertNotIn('<receiver',manifest)
+        self.assertIn('android:name=".tasker.TaskerFireReceiver"',manifest)
         self.assertNotIn('MANAGE_EXTERNAL_STORAGE',manifest)
     def test_remote_preferences_not_world_readable(self):
         s=(SRC/'CompanionApp.java').read_text()

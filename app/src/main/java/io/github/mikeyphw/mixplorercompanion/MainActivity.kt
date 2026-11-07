@@ -1,6 +1,7 @@
 package io.github.mikeyphw.mixplorercompanion
 
 import android.os.Bundle
+import io.github.mikeyphw.mixplorercompanion.tasker.TaskerContract
 import android.content.SharedPreferences
 import android.widget.Toast
 import io.github.mikeyphw.mixplorercompanion.appearance.AppearanceContract
@@ -116,8 +117,13 @@ class MainActivity : AppCompatActivity() {
             label(card, "Host CI tests companion UI only. Verify callback, appearance and rollback on your own device before acceptance.")
         }
         section(content, "Tasker automation") { card ->
-            label(card, "Action dispatch is intentionally disabled pending on-device contract tests.")
-            label(card, "APK evidence: ACTION_TASK is present; completion callbacks are unverified.")
+            label(card, "Native Tasker plugin: add Plugin → MiXplorer Tasker action in Tasker.")
+            label(card, "Only Beta 6.71.15 (26090412). Actions report dispatch, not file-operation completion.")
+            switch(card, "Enable Tasker actions", "OFF by default; enable only after testing with disposable files", TaskerContract.isEnabled(this)) {
+                TaskerContract.setEnabled(this, it)
+                render()
+            }
+            label(card, "COPY, MOVE, RENAME, CREATE, DELETE, ARCHIVE and EXTRACT are experimental pending physical file verification. Never use private files as test inputs.")
         }
         section(content, "Diagnostics") { card ->
             label(card, "APK inspected: MiXplorer 6.71.15-BETA • versionCode 26090412")

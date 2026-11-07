@@ -20,7 +20,7 @@ class FoundationContracts(unittest.TestCase):
         self.assertNotIn("com.mixplorer.ACTION_TASK", manifest)
         self.assertNotIn("android.permission.MANAGE_EXTERNAL_STORAGE", manifest)
         source = (ROOT / "app/src/main/java/io/github/mikeyphw/mixplorercompanion/TaskerCapabilityCatalog.kt").read_text()
-        self.assertIn("PLUGIN_ENABLED = false", source)
+        self.assertIn("PLUGIN_ENABLED = true", source)
     def test_devtool_android_runner(self):
         import tomllib
         d=tomllib.loads((ROOT / '.devtool.toml').read_text())

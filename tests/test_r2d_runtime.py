@@ -86,11 +86,11 @@ class R2DContracts(unittest.TestCase):
         manifest=(ROOT/'app/src/main/AndroidManifest.xml').read_text()
         self.assertNotIn('MANAGE_EXTERNAL_STORAGE',manifest)
         workflow=(ROOT/'.github/workflows/android-ci.yml').read_text()
-        self.assertIn("grep -Fxq 'OK (2 tests)'",workflow)
+        self.assertIn("grep -Fxq 'OK (4 tests)'",workflow)
         self.assertIn('api-level: 36',workflow)
         self.assertIn('ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d',workflow)
         gradle=(ROOT/'app/build.gradle.kts').read_text()
-        self.assertIn('versionCode = 4',gradle)
+        self.assertIn('versionCode = 5',gradle)
         self.assertIn('targetSdk = 35',gradle)
         self.assertIn('compileSdk = 37',gradle)
     def test_no_unsafe_operations_in_probe(self):
