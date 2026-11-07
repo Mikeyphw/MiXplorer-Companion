@@ -18,7 +18,8 @@ class R2ToolchainContract(unittest.TestCase):
     def test_hosted_gradle_sdk(self):
         flow=(ROOT/'.github/workflows/android-ci.yml').read_text()
         wrapper=(ROOT/'gradle/wrapper/gradle-wrapper.properties').read_text()
-        self.assertIn('android-37',flow)
+        self.assertIn('sdkmanager "platforms;android-37.0" "build-tools;36.0.0"', flow)
+        self.assertNotIn('sdkmanager "platforms;android-37"', flow)
         self.assertIn('build-tools;36.0.0',flow)
         self.assertIn("gradle-version: '9.4.1'",flow)
         self.assertIn('gradle-9.4.1-bin.zip',wrapper)
