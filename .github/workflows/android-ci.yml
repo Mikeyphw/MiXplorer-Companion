@@ -1,4 +1,4 @@
-name: MiXplorer Companion R1 Android CI
+name: MiXplorer Companion Android CI
 on:
   push:
     branches: [main]
@@ -46,4 +46,87 @@ jobs:
           name: mixplorer-companion-r1-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 14
+# Companion UI only. The hosted emulator cannot prove Vector/LSPosed injection.
+  instrumentation:
+    needs: android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Enforce pinned CI source and initialize fail-closed evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$RUNNER_OS" = Linux
+          test "$(uname -m)" = x86_64
+          mkdir -p "$RUNNER_TEMP/mixplorer-r2q-emulator"
+          echo R2Q_HOSTED_EMULATOR_NOT_RUN > "$RUNNER_TEMP/mixplorer-r2q-emulator/result.txt"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - name: Install app compile SDK 37.0 and runtime SDK 36
+        shell: bash
+        run: sdkmanager --install 'platforms;android-37.0' 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.4.1'
+      - name: Build both debug and instrumentation APKs on hosted runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --max-workers=2 --console=plain :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Require accessible KVM device (never software fallback)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -c /dev/kvm || { echo R2Q_KVM_UNAVAILABLE >&2; exit 1; }
+          if [[ ! -r /dev/kvm || ! -w /dev/kvm ]]; then
+            sudo chmod a+rw /dev/kvm
+          fi
+          test -r /dev/kvm && test -w /dev/kvm || { echo R2Q_KVM_REFUSED >&2; exit 1; }
+      - name: Download exact API36 Google x86_64 system image (bounded retries)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if sdkmanager --install 'system-images;android-36;google_apis;x86_64'; then exit 0; fi
+            if [[ "$attempt" == 3 ]]; then echo R2Q_AVD_IMAGE_INSTALL_FAILED >&2; exit 1; fi
+            sleep 10
+          done
+      # Adopt the verified Cinderbox-Companion API36 hosted emulator configuration
+      # (successful job 42400362142). This is not an LSPosed/Vector device.
+      - name: Run exactly two companion UI tests on a fresh Cinderbox-style API36 emulator
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 2
+          ram-size: 2048M
+          disk-size: 3072M
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: bash scripts/ci/r2q_emulator_ci.sh
+      - name: Verify result receipt independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fxq R2Q_HOSTED_EMULATOR_UI_PASS "$RUNNER_TEMP/mixplorer-r2q-emulator/result.txt"
+          grep -Fxq 'OK (2 tests)' "$RUNNER_TEMP/mixplorer-r2q-emulator/instrumentation.txt"
+      - name: Upload hosted-emulator evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mixplorer-companion-r2q-cinderbox-api36-evidence
+          path: ${{ runner.temp }}/mixplorer-r2q-emulator/
+          if-no-files-found: warn
           retention-days: 14

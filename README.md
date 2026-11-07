@@ -50,3 +50,7 @@ surface separately; force-stop/relaunch MiXplorer after changes. This is an
 experimental Material You foundation, **not** a full UI replacement, and on-
 device acceptance remains mandatory. See `r2/IMPLEMENTATION.md`. Stable and
 Silver are listed only for discovery; R2 does not hook them.
+
+## R2Q qualification
+
+Cinderbox-proven API36 hosted Android UI instrumentation and physical-device acceptance procedure: see `r2/QUALIFICATION.md`. The emulator cannot establish Vector/LSPosed hook success.
