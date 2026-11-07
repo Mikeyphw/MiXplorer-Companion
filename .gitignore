@@ -12,3 +12,8 @@
 *.aab
 *.keystore
 *.jks
+
+# Generated Python test and tooling caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
