@@ -33,6 +33,60 @@ public final class ThemeApplicator {
         }
     }
 
+    /** Bounded, best-effort chrome tint. No view reparenting or content scanning. */
+    public static void applyChrome(Activity activity, boolean toolbar, boolean drawer) {
+        if (!toolbar && !drawer) return;
+        Window window = activity.getWindow();
+        if (window == null) return;
+        View decor = window.getDecorView();
+        if (decor == null) return;
+        final int chromeColor = AppearancePalette.chrome(activity);
+        Runnable paint = () -> {
+            try { styleChrome(decor, toolbar, drawer, chromeColor); }
+            catch (RuntimeException ignored) { /* Unknown custom widgets remain usable. */ }
+        };
+        decor.post(paint);
+        // One bounded second pass catches late layout attachment; no persistent listener.
+        decor.postDelayed(paint, 240L);
+    }
+
+    private static void styleChrome(View root, boolean toolbar, boolean drawer, int surface) {
+        ArrayDeque<View> pending = new ArrayDeque<>();
+        pending.add(root);
+        int scanned = 0;
+        while (!pending.isEmpty() && scanned++ < 1600) {
+            View view = pending.removeFirst();
+            String name = view.getClass().getName();
+            boolean isToolbar = "android.widget.Toolbar".equals(name)
+                    || "androidx.appcompat.widget.Toolbar".equals(name)
+                    || "com.google.android.material.appbar.MaterialToolbar".equals(name);
+            boolean isDrawer = AppearanceContract.BETA_PACKAGE.equals(
+                    view.getContext().getPackageName())
+                    && "com.mixplorer.widgets.MiDrawer".equals(name);
+            if ((toolbar && isToolbar) || (drawer && isDrawer)) {
+                // Tint existing background in place, preserving ripple/shape/state.
+                if (view.getBackground() != null) {
+                    view.setBackgroundTintList(ColorStateList.valueOf(surface));
+                } else if (isToolbar) {
+                    view.setBackgroundColor(surface);
+                }
+                continue;
+            }
+            // Never traverse browser contents, filenames, thumbnails, or embedded web UI.
+            if ("com.mixplorer.widgets.MiPager".equals(name)
+                    || "com.mixplorer.widgets.MiListView".equals(name)
+                    || "androidx.recyclerview.widget.RecyclerView".equals(name)
+                    || "android.webkit.WebView".equals(name)) continue;
+            if (view instanceof ViewGroup) {
+                ViewGroup group = (ViewGroup) view;
+                for (int i = 0; i < group.getChildCount(); ++i) {
+                    View child = group.getChildAt(i);
+                    if (child != null) pending.addLast(child);
+                }
+            }
+        }
+    }
+
     private static int systemSurface(Resources res, boolean dark) {
         if (Build.VERSION.SDK_INT >= 31) {
             try {

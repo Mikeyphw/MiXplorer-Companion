@@ -22,8 +22,8 @@ class CompanionUiSmokeTest {
         onView(withText("MiXplorer Companion")).check(matches(isDisplayed()))
         onView(withText("Package compatibility")).check(matches(isDisplayed()))
         // Runtime acceptance must never be presented as qualified on this empty emulator.
-        onView(withText("R2D runtime acceptance: NOT VERIFIED"))
-            .check(matches(withText("R2D runtime acceptance: NOT VERIFIED")))
+        onView(withText("R2B visual acceptance: NOT VERIFIED BY APP"))
+            .check(matches(withText("R2B visual acceptance: NOT VERIFIED BY APP")))
     }
 
     @Test fun refusesAppearanceControlsWhenMiXplorerAndVectorAreAbsent() {
@@ -32,6 +32,14 @@ class CompanionUiSmokeTest {
         onView(withContentDescription("System bar surfaces"))
             .check(matches(not(isEnabled())))
         onView(withContentDescription("Tab bar surface"))
+            .check(matches(not(isEnabled())))
+        onView(withContentDescription("Toolbar surface"))
+            .check(matches(not(isEnabled())))
+        onView(withContentDescription("Navigation drawer surface"))
+            .check(matches(not(isEnabled())))
+        onView(withContentDescription("Dialog surface"))
+            .check(matches(not(isEnabled())))
+        onView(withContentDescription("Popup menu surface"))
             .check(matches(not(isEnabled())))
     }
 }

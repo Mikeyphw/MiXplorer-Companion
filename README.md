@@ -63,3 +63,12 @@ a visible in-app **NOT VERIFIED** qualification state, and a non-destructive
 is considered eligible. Neither source tests nor the hosted API36 emulator certify
 physical Vector/LSPosed injection or the visual result. See
 `r2/DEVICE_ACCEPTANCE_R2D.md` for explicit opt-in and rollback steps.
+
+## R2B — Opt-in Material You chrome and transient surfaces
+
+Four additional independently opt-in, default-OFF appearance controls target
+recognized toolbars, MiDrawer backgrounds, stock alert dialogs, and supported
+PopupWindow menu backgrounds for the exact inspected Beta version only.
+Unsupported custom views are skipped. No file operations or Tasker hooks are
+introduced. Source/CI success does not establish device styling or rollback.
+See `r2/R2B_APPEARANCE.md` for scoped behavior and acceptance.
