@@ -13,6 +13,7 @@ import org.junit.Assert.assertTrue
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isChecked
@@ -55,8 +56,15 @@ class CompanionUiSmokeTest {
     }
 
     @Test fun taskerIsDisabledUntilUserExplicitlyEnablesIt() {
-        onView(withText("Tasker automation")).check(matches(isDisplayed()))
+        // The Tasker section is below the fold on API 36 Pixel 6. Espresso's
+        // isDisplayed() requires a non-empty screen rectangle, not merely
+        // View.VISIBLE; scroll the real ScrollView before asserting.
+        onView(withText("Tasker automation"))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
         onView(withContentDescription("Enable Tasker actions"))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
             .check(matches(not(isChecked())))
     }
 
