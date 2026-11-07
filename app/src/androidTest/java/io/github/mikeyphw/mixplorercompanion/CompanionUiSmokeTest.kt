@@ -21,6 +21,9 @@ class CompanionUiSmokeTest {
     @Test fun launchesAndDisplaysPackageDiscovery() {
         onView(withText("MiXplorer Companion")).check(matches(isDisplayed()))
         onView(withText("Package compatibility")).check(matches(isDisplayed()))
+        // Runtime acceptance must never be presented as qualified on this empty emulator.
+        onView(withText("R2D runtime acceptance: NOT VERIFIED"))
+            .check(matches(withText("R2D runtime acceptance: NOT VERIFIED")))
     }
 
     @Test fun refusesAppearanceControlsWhenMiXplorerAndVectorAreAbsent() {
