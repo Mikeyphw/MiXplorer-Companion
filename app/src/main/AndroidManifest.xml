@@ -6,6 +6,7 @@
         <package android:name="com.mixplorer.silver"/>
     </queries>
     <application
+        android:name=".CompanionApp"
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
         android:label="MiXplorer Companion"

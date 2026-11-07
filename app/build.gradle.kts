@@ -1,11 +1,10 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {
     namespace = "io.github.mikeyphw.mixplorercompanion"
-    compileSdk = 35
+    compileSdk = 37
     defaultConfig {
         applicationId = "io.github.mikeyphw.mixplorercompanion"
         minSdk = 26
@@ -23,7 +22,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
+    // AGP 9 built-in Kotlin inherits Java targetCompatibility (17).
     packaging {
         resources {
             merges += "META-INF/xposed/*"
@@ -36,5 +35,6 @@ dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     compileOnly("io.github.libxposed:api:102.0.0")
+    implementation("io.github.libxposed:service:102.0.0")
     testImplementation("junit:junit:4.13.2")
 }
