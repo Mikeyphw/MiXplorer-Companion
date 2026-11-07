@@ -10,6 +10,11 @@ public final class AppearanceContract {
     public static final String ENABLED = "r2_enabled";
     public static final String SYSTEM_BARS = "r2_system_bars";
     public static final String TAB_SURFACE = "r2_tab_surface";
+    // R2B is explicit opt-in per surface; all new switches default false.
+    public static final String TOOLBAR_SURFACE = "r2b_toolbar_surface";
+    public static final String DRAWER_SURFACE = "r2b_drawer_surface";
+    public static final String DIALOG_SURFACE = "r2b_dialog_surface";
+    public static final String MENU_SURFACE = "r2b_menu_surface";
 
     private AppearanceContract() { }
 

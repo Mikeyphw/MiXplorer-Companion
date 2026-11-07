@@ -21,6 +21,8 @@ with ZipFile(apk) as z:
     assert entry == 'io.github.mikeyphw.mixplorercompanion.lsposed.ModuleEntry',entry
     # A DEX marker proves packaging only, not callback execution on a device.
     dex = b''.join(z.read(n) for n in names if n.startswith('classes') and n.endswith('.dex'))
-    for marker in (b'R2D_CALLBACK_REACHED', b'R2D_APPEARANCE_REQUESTED'):
+    for marker in (b'R2D_CALLBACK_REACHED', b'R2D_APPEARANCE_REQUESTED',
+                   b'R2B_CHROME_REQUESTED', b'R2B_DIALOG_SURFACE_REQUESTED',
+                   b'R2B_MENU_SURFACE_REQUESTED'):
         assert marker in dex, f'Runtime marker not packaged: {marker.decode()}'
 print('R1_APK_METADATA_PASS',apk)

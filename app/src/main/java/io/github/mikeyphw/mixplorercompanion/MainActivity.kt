@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
         val toolbar = MaterialToolbar(this).apply {
             title = "MiXplorer Companion"
-            subtitle = "R2A • Appearance preview"
+            subtitle = "R2B • Material You appearance"
         }
         root.addView(toolbar)
         val scroll = ScrollView(this).apply { isFillViewport = true }
@@ -87,16 +87,21 @@ class MainActivity : AppCompatActivity() {
         val qualified = beta != null && AppearanceContract.supports(beta.packageName, beta.versionCode)
         val remote = CompanionApp.appearancePreferences()
         val canChange = qualified && remote != null
-        section(content, "MiXplorer Beta appearance • R2A") { card ->
+        section(content, "MiXplorer Beta appearance • R2B") { card ->
             label(card, if (qualified) "Inspected beta 6.71.15 detected." else "Unsupported or missing beta version: appearance is disabled.")
             label(card, if (remote == null) "LSPosed service not connected. Enable the module and open its scope in Vector." else "LSPosed service connected. Changes apply on next MiXplorer launch.")
             remoteSwitch(card, "Enable Material You experiment", "Off by default; only beta version 26090412", remote, AppearanceContract.ENABLED, false, canChange)
             remoteSwitch(card, "System bar surfaces", "Dynamic neutral surfaces and icon contrast (Android 15+ may override)", remote, AppearanceContract.SYSTEM_BARS, true, canChange)
             remoteSwitch(card, "Tab bar surface", "Subtle Material You surface for the existing MiXplorer tabs", remote, AppearanceContract.TAB_SURFACE, true, canChange)
+            label(card, "R2B extensions • each starts OFF; use only after baseline acceptance")
+            remoteSwitch(card, "Toolbar surface", "Tint recognized toolbar backgrounds; no icon or layout changes", remote, AppearanceContract.TOOLBAR_SURFACE, false, canChange)
+            remoteSwitch(card, "Navigation drawer surface", "Tint existing MiDrawer background only, without touching files", remote, AppearanceContract.DRAWER_SURFACE, false, canChange)
+            remoteSwitch(card, "Dialog surface", "Experimental: stock alert dialogs only; custom dialogs excluded", remote, AppearanceContract.DIALOG_SURFACE, false, canChange)
+            remoteSwitch(card, "Popup menu surface", "Experimental: tint supported popup backgrounds; not menu items", remote, AppearanceContract.MENU_SURFACE, false, canChange)
             label(card, "After changing settings, force-stop/relaunch MiXplorer to apply or undo its view styling. Disable the module in Vector for emergency rollback.")
         }
         section(content, "LSPosed UI integration") { card ->
-            label(card, "API 102: version-pinned BrowseActivity.onResume hook for the inspected beta only.")
+            label(card, "API 102: version-pinned BrowseActivity hook plus guarded alert/menu surfaces.")
             label(card, "Scope catalog: beta, stable, Silver. Stable/Silver receive no UI hooks in R2.")
         }
         // Diagnostic readiness is deliberately distinct from runtime qualification.
@@ -104,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             remote?.getBoolean(AppearanceContract.ENABLED, false) ?: false
         } catch (_: RuntimeException) { false }
         section(content, "Runtime qualification") { card ->
-            label(card, "R2D runtime acceptance: NOT VERIFIED")
+            label(card, "R2B visual acceptance: NOT VERIFIED BY APP")
             label(card, if (qualified) "Target version: exact inspected Beta match" else "Target version: unsupported or absent")
             label(card, if (remote != null) "Vector/LSPosed service: connected" else "Vector/LSPosed service: disconnected")
             label(card, if (experimentEnabled) "Appearance preference: enabled (not proof of injection)" else "Appearance preference: disabled")
@@ -116,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
         section(content, "Diagnostics") { card ->
             label(card, "APK inspected: MiXplorer 6.71.15-BETA • versionCode 26090412")
-            label(card, "R2D device runtime acceptance: PENDING • CI does not prove injection")
+            label(card, "R2B appearance changes: DEVICE ACCEPTANCE PENDING • CI does not prove styling")
             val button = MaterialButton(this).apply {
                 text = "Refresh package detection"
                 setOnClickListener { render() }

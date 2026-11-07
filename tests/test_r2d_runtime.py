@@ -81,7 +81,7 @@ class R2DContracts(unittest.TestCase):
         self.assertNotIn('R2D_RUNTIME_PASS',lines)
     def test_ui_and_ci_gate_remain_conservative(self):
         activity=(D/'MainActivity.kt').read_text()
-        self.assertIn('R2D runtime acceptance: NOT VERIFIED',activity)
+        self.assertIn('R2B visual acceptance: NOT VERIFIED BY APP',activity)
         self.assertIn('Appearance preference: enabled (not proof of injection)',activity)
         manifest=(ROOT/'app/src/main/AndroidManifest.xml').read_text()
         self.assertNotIn('MANAGE_EXTERNAL_STORAGE',manifest)
@@ -90,7 +90,7 @@ class R2DContracts(unittest.TestCase):
         self.assertIn('api-level: 36',workflow)
         self.assertIn('ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d',workflow)
         gradle=(ROOT/'app/build.gradle.kts').read_text()
-        self.assertIn('versionCode = 3',gradle)
+        self.assertIn('versionCode = 4',gradle)
         self.assertIn('targetSdk = 35',gradle)
         self.assertIn('compileSdk = 37',gradle)
     def test_no_unsafe_operations_in_probe(self):
