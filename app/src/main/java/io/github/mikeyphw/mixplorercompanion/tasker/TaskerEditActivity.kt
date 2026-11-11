@@ -26,6 +26,8 @@ class TaskerEditActivity : AppCompatActivity() {
         }
         val prior = try { TaskerRequest.fromBundle(intent.getBundleExtra(TaskerContract.BUNDLE)) }
                     catch (_: RuntimeException) { null }
+        val hostCapabilities = try { intent.getIntExtra(TaskerContract.HOST_CAPABILITIES, 0) }
+                               catch (_: RuntimeException) { 0 }
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val px = (16 * resources.displayMetrics.density).toInt()
@@ -60,7 +62,7 @@ class TaskerEditActivity : AppCompatActivity() {
                     op.selectedItem.toString(),
                     source.text.toString().trim(), dest.text.toString().trim(), name.text.toString().trim()
                 )
-                val allowsVariables = (intent.getIntExtra(TaskerContract.HOST_CAPABILITIES, 0) and TaskerContract.CAP_REPLACE) != 0
+                val allowsVariables = (hostCapabilities and TaskerContract.CAP_REPLACE) != 0
                 val error = request.error(allowVariables = allowsVariables)
                 if (error != null) {
                     Toast.makeText(this@TaskerEditActivity, error, Toast.LENGTH_LONG).show()
@@ -69,13 +71,23 @@ class TaskerEditActivity : AppCompatActivity() {
                 val token = TaskerContract.issuedToken(this@TaskerEditActivity)
                 val bundle = request.toBundle(token)
                 // Host replaces only user-editable text values, never the capability token.
-                if ((intent.getIntExtra(TaskerContract.HOST_CAPABILITIES, 0) and TaskerContract.CAP_REPLACE) != 0) {
+                if (allowsVariables) {
                     bundle.putString(TaskerContract.REPLACE_KEYS, "src dst name")
                 }
                 setResult(Activity.RESULT_OK, Intent().apply {
                     putExtra(TaskerContract.BUNDLE, bundle)
                     putExtra(TaskerContract.BLURB, "MiXplorer Beta: ${request.operation} (dispatch only)")
-                    putExtra(TaskerContract.RELEVANT_VARIABLES, arrayOf("%mixstatus", "%mixaction"))
+                    if ((hostCapabilities and TaskerContract.CAP_RELEVANT) != 0) {
+                        putExtra(TaskerContract.RELEVANT_VARIABLES, arrayOf(
+                            "%mixstatus\nBridge status\nDispatch-only or refusal; not file completion",
+                            "%mixaction\nAction\nOperation sent to MiXplorer (if dispatched)",
+                            "%errmsg\nError message\nOnly present when plugin returns a failure"
+                        ))
+                    }
+                    // Tasker waits for receiver result, NOT MiXplorer file completion.
+                    if ((hostCapabilities and TaskerContract.CAP_SYNC) != 0) {
+                        putExtra(TaskerContract.REQUEST_TIMEOUT, 3000)
+                    }
                 })
                 finish()
             }

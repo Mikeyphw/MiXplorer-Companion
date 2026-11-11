@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.mikeyphw.mixplorercompanion.tasker.TaskerContract
 import java.util.concurrent.CountDownLatch
@@ -83,5 +84,48 @@ class CompanionUiSmokeTest {
             .check(matches(not(isEnabled())))
         onView(withContentDescription("Popup menu surface"))
             .check(matches(not(isEnabled())))
+    }
+
+    @Test fun malformedTaskerBundlesHaveNoRequest() {
+        assertEquals(null, io.github.mikeyphw.mixplorercompanion.tasker.TaskerRequest.fromBundle(null))
+        assertEquals(null, io.github.mikeyphw.mixplorercompanion.tasker.TaskerRequest.fromBundle(Bundle()))
+        val malformed = Bundle().apply {
+            putInt("schema", TaskerContract.SCHEMA)
+            putString("op", "COPY")
+            putString("src", "/sdcard/Download/disposable")
+            // No destination, name or token. Never create a dispatchable request.
+        }
+        assertEquals(null, io.github.mikeyphw.mixplorercompanion.tasker.TaskerRequest.fromBundle(malformed))
+    }
+
+    @Test fun unauthorizedFireWithAutomationEnabledIsRefused() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val previous = TaskerContract.isEnabled(context)
+        try {
+            TaskerContract.setEnabled(context, true)
+            val latch = CountDownLatch(1)
+            var reply = Int.MIN_VALUE
+            val candidate = Intent(TaskerContract.FIRE).apply {
+                component = ComponentName(context, io.github.mikeyphw.mixplorercompanion.tasker.TaskerFireReceiver::class.java)
+                putExtra(TaskerContract.BUNDLE, Bundle().apply {
+                    putInt("schema", TaskerContract.SCHEMA)
+                    putString("op", "COPY")
+                    putString("src", "/sdcard/Download/test-source")
+                    putString("dst", "/sdcard/Download/test-target")
+                    putString("name", "")
+                    putString("token", "not-a-valid-secret")
+                })
+            }
+            context.sendOrderedBroadcast(candidate, null, object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    reply = resultCode
+                    latch.countDown()
+                }
+            }, null, 0, null, null)
+            assertTrue("Unauthorized FIRE had no response", latch.await(10, TimeUnit.SECONDS))
+            assertEquals(TaskerContract.FAILED, reply)
+        } finally {
+            TaskerContract.setEnabled(context, previous)
+        }
     }
 }

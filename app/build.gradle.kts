@@ -9,8 +9,8 @@ android {
         applicationId = "io.github.mikeyphw.mixplorercompanion"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "0.5.0-r3t"
+        versionCode = 6
+        versionName = "0.6.0-r3t-hf03"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

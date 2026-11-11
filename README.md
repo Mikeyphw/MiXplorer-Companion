@@ -1,6 +1,6 @@
 # MiXplorer Companion — R0–R1 foundation
 
-Independent **Material 3** companion app with an experimental **libxposed API 102** beta-only appearance hook, and planned Tasker integration. It contains no MiXplorer source or APK bytes.
+Independent **Material 3** companion app with an experimental **libxposed API 102** beta-only appearance hook, and an experimental native Tasker plugin. It contains no MiXplorer source or APK bytes.
 
 ## Current functionality
 
@@ -8,7 +8,7 @@ Independent **Material 3** companion app with an experimental **libxposed API 10
 - Package detection for `com.mixplorer.beta`, `com.mixplorer`, and `com.mixplorer.silver`.
 - Version-aware warning: APK evidence exists for MiXplorer **6.71.15-BETA** (`26090412`) but **runtime hooks are unverified**.
 - Modern LSPosed API 102 Beta `BrowseActivity.onResume` appearance hook; default off and not yet physical-device-qualified.
-- Tasker capability catalog prepared. **Zero Tasker actions advertised or dispatched.**
+- Native Tasker/Locale plugin for Beta 26090412, default OFF. Dispatch acknowledgment is not file-operation completion.
 - Devtool native Android runner, source contracts and hosted GitHub Actions Gradle build.
 
 ## Why the beta package matters
@@ -32,7 +32,7 @@ devtool -r "$HOME/Code/MiXplorer-Companion" --target companion android capabilit
 - R1/R2Q project and hosted build contracts: **passed in PR CI**; physical runtime acceptance pending.
 - LSPosed module binary metadata: **verified by hosted APK checks**.
 - MiXplorer runtime UI hooks: **R2A experimental opt-in appearance only; unqualified on physical hardware**.
-- Tasker integration: **not implemented**.
+- Tasker integration: **R3T implemented; physical operation acceptance unverified.**
 
 Never infer a completed file operation merely because MiXplorer accepts a broadcast. Before enabling Tasker actions, document exact extras, Android background behavior, and a completion verification mechanism.
 

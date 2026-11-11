@@ -47,7 +47,11 @@ class TaskerContracts(unittest.TestCase):
             self.assertNotIn(forbidden,c)
     def test_dispatch_not_completion(self):
         fire=(J/'TaskerFireReceiver.kt').read_text()
-        self.assertIn('R3T_DISPATCHED_UNVERIFIED',fire)
+        self.assertIn('marker("DISPATCHED_UNVERIFIED")',fire)
+        self.assertIn('marker("RECEIVER_ENTERED")',fire)
+        self.assertIn('marker("REFUSED_$reason")',fire)
+        self.assertIn('Log.i("MiXTaskerBridge", "R3T_$code")',fire)
+        self.assertIn('CAP_SYNC', (J/'TaskerContract.kt').read_text())
         self.assertIn('dispatched_unverified',fire)
         self.assertNotIn('operation_completed',fire)
         self.assertNotIn('RESULT_CODE_PENDING',fire)
@@ -71,7 +75,7 @@ class TaskerContracts(unittest.TestCase):
         self.assertIn('untrustedPluginFireWithoutTokenCannotDispatch',src)
         self.assertIn('TaskerContract.FAILED',src)
         self.assertIn('taskerIsDisabledUntilUserExplicitlyEnablesIt',src)
-        self.assertIn("OK (4 tests)",shell)
+        self.assertIn("OK (6 tests)",shell)
     def test_device_probe_is_read_only(self):
         src=(ROOT/'tools/r3t_tasker_device_probe.py').read_text()
         for forbidden in ('pm clear','force-stop','install -r','shell=True','su -c','--json','logcat -c'):
@@ -86,7 +90,7 @@ class TaskerContracts(unittest.TestCase):
             if args==('shell','getprop','ro.build.version.sdk'):return '36'
             if args[:3]==('shell','pm','path'):return 'package:/some/base.apk'
             if args==('shell','dumpsys','package',mod.BETA):return 'versionCode=26090412'
-            if args==('shell','dumpsys','package',mod.COMPANION):return 'versionCode=5'
+            if args==('shell','dumpsys','package',mod.COMPANION):return 'versionCode=6'
             raise AssertionError(args)
         with patch.object(mod,'adb',side_effect=fake):
             rows,code=mod.probe('localhost:5555')
@@ -95,7 +99,7 @@ class TaskerContracts(unittest.TestCase):
         self.assertIn('R3T_COMPLETION_UNVERIFIED',rows)
     def test_version_increment_and_preserve_appearance(self):
         build=(ROOT/'app/build.gradle.kts').read_text()
-        self.assertIn('versionCode = 5',build)
+        self.assertIn('versionCode = 6',build)
         self.assertIn('targetSdk = 35',build)
         self.assertIn('compileSdk = 37',build)
         module=(ROOT/'app/src/main/java/io/github/mikeyphw/mixplorercompanion/lsposed/ModuleEntry.java').read_text()

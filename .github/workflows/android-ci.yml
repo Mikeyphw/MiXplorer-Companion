@@ -103,7 +103,7 @@ jobs:
           done
       # Adopt the verified Cinderbox-Companion API36 hosted emulator configuration
       # (successful job 42400362142). This is not an LSPosed/Vector device.
-      - name: Run four companion UI tests on a fresh Cinderbox-style API36 emulator
+      - name: Run six companion UI tests on a fresh Cinderbox-style API36 emulator
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         with:
           api-level: 36
@@ -121,7 +121,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fxq R2Q_HOSTED_EMULATOR_UI_PASS "$RUNNER_TEMP/mixplorer-r2q-emulator/result.txt"
-          grep -Fxq 'OK (4 tests)' "$RUNNER_TEMP/mixplorer-r2q-emulator/instrumentation.txt"
+          grep -Fxq 'OK (6 tests)' "$RUNNER_TEMP/mixplorer-r2q-emulator/instrumentation.txt"
       - name: Upload hosted-emulator evidence even on failure
         if: always()
         uses: actions/upload-artifact@v4

@@ -67,8 +67,8 @@ class R2BContracts(unittest.TestCase):
 
     def test_platform_and_rollback_gates(self):
         gradle=(ROOT/'app/build.gradle.kts').read_text()
-        self.assertIn('versionCode = 5',gradle)
-        self.assertIn('versionName = "0.5.0-r3t"',gradle)
+        self.assertIn('versionCode = 6',gradle)
+        self.assertIn('versionName = "0.6.0-r3t-hf03"',gradle)
         self.assertIn('minSdk = 26',gradle)
         self.assertIn('targetSdk = 35',gradle)
         self.assertIn('compileSdk = 37',gradle)
@@ -85,7 +85,7 @@ class R2BContracts(unittest.TestCase):
             self.assertIn('withContentDescription("'+s+'")',instrument)
         flow=(ROOT/'.github/workflows/android-ci.yml').read_text()
         self.assertIn('api-level: 36',flow)
-        self.assertIn("grep -Fxq 'OK (4 tests)'",flow)
+        self.assertIn("grep -Fxq 'OK (6 tests)'",flow)
         self.assertIn('ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d',flow)
 
     def test_existing_device_probe_remains_read_only(self):

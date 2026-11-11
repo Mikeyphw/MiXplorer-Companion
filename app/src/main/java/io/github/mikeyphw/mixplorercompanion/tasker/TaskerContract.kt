@@ -16,7 +16,11 @@ object TaskerContract {
     const val RELEVANT_VARIABLES = "net.dinglisch.android.tasker.RELEVANT_VARIABLES"
     const val REPLACE_KEYS = "net.dinglisch.android.tasker.extras.VARIABLE_REPLACE_KEYS"
     const val HOST_CAPABILITIES = "net.dinglisch.android.tasker.extras.HOST_CAPABILITIES"
+    const val CAP_RETURN = 2
     const val CAP_REPLACE = 8
+    const val CAP_RELEVANT = 16
+    const val CAP_SYNC = 32
+    const val REQUEST_TIMEOUT = "net.dinglisch.android.tasker.extras.REQUESTED_TIMEOUT"
     const val MIX_ACTION = "com.mixplorer.ACTION_TASK"
     const val MIX_PACKAGE = "com.mixplorer.beta"
     const val MIX_RECEIVER = "com.mixplorer.BroadcastReceiver"
@@ -49,7 +53,7 @@ object TaskerContract {
     }
 
     fun hasValidToken(context: Context, candidate: String?): Boolean {
-        if (candidate.isNullOrBlank()) return false
+        if (candidate == null || candidate.length !in 40..128) return false
         val expected = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(TOKEN, null) ?: return false
         return MessageDigest.isEqual(expected.toByteArray(Charsets.UTF_8), candidate.toByteArray(Charsets.UTF_8))
@@ -86,12 +90,16 @@ data class TaskerRequest(
     }
     companion object {
         fun fromBundle(bundle: Bundle?): TaskerRequest? {
-            if (bundle?.getInt("schema", -1) != TaskerContract.SCHEMA) return null
+            if (bundle == null || !bundle.containsKey("schema") ||
+                bundle.getInt("schema", -1) != TaskerContract.SCHEMA) return null
+            val operation = bundle.getString("op") ?: return null
+            val source = bundle.getString("src") ?: return null
+            val destination = bundle.getString("dst") ?: return null
+            val name = bundle.getString("name") ?: return null
+            if (operation.length > 32) return null
             return TaskerRequest(
-                bundle.getString("op").orEmpty().trim().uppercase(java.util.Locale.ROOT),
-                bundle.getString("src").orEmpty().trim(),
-                bundle.getString("dst").orEmpty().trim(),
-                bundle.getString("name").orEmpty().trim(),
+                operation.trim().uppercase(java.util.Locale.ROOT),
+                source.trim(), destination.trim(), name.trim(),
             )
         }
     }
