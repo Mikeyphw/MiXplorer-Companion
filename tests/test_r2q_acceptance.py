@@ -24,7 +24,7 @@ class QualificationContracts(unittest.TestCase):
         self.assertIn(':app:assembleDebug :app:assembleDebugAndroidTest',FLOW)
     def test_two_real_tests_required(self):
         self.assertIn('am instrument -w -r',RUN)
-        self.assertIn("grep -Fxq 'OK (2 tests)'",RUN)
+        self.assertIn("grep -Fxq 'OK (6 tests)'",RUN)
         self.assertIn("grep -Fxq 'INSTRUMENTATION_CODE: -1'",RUN)
         self.assertIn('R2Q_INSTRUMENTATION_RESULT_FAILED',RUN)
         self.assertIn('R2Q_HOSTED_EMULATOR_UI_PASS',RUN)
